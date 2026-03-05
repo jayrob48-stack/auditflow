@@ -51,6 +51,33 @@ export default function InvoiceDetail() {
     toast.success("Invoice flagged for review");
   };
 
+  const runAudit = async () => {
+    if (!invoice) return;
+    setIsAuditing(true);
+    setAuditReport(null);
+    try {
+      const allInvoices = await base44.entities.Invoice.list("-created_date", 500);
+      const history_index = allInvoices
+        .filter(i => i.id !== invoice.id)
+        .map(i => ({
+          vendor_name: i.vendor_name,
+          invoice_number: i.invoice_number,
+          invoice_date: i.invoice_date,
+          total: i.total_amount,
+        }));
+
+      const res = await base44.functions.invoke("auditInvoice", {
+        invoice_json: invoice,
+        history_index,
+      });
+      setAuditReport(res.data);
+    } catch (err) {
+      toast.error("Audit failed: " + err.message);
+    } finally {
+      setIsAuditing(false);
+    }
+  };
+
   if (isLoading || !invoice) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
