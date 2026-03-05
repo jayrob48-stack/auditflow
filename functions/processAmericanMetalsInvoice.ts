@@ -41,7 +41,13 @@ function parseAmericanMetalsPrice(raw) {
 
 /** Normalise a description for matching */
 function normDesc(s) {
-  return String(s || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  // Strip bracket/paren suffixes like [212] (ATD) and lowercase
+  return String(s || '').toLowerCase().replace(/[\[\(][^\]\)]*[\]\)]/g, '').replace(/\s+/g, ' ').trim();
+}
+
+/** Strip all non-alpha characters and split into word tokens */
+function tokenSet(s) {
+  return new Set(String(s || '').toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean));
 }
 
 /** Simple Dice-coefficient similarity (no external deps) */
@@ -62,9 +68,16 @@ function diceSimilarity(a, b) {
 /**
  * Find best contract price match for a description.
  * Returns { contract, method } or null.
+ *
+ * Match order:
+ *   1) Exact string
+ *   2) Normalised exact (after stripping brackets/parens)
+ *   3) Token-subset: all tokens of the shorter name appear in the longer
+ *   4) Fuzzy Dice ≥ 80%
  */
 function findContract(desc, contracts) {
   const nd = normDesc(desc);
+  const descTokens = tokenSet(desc);
 
   // 1) Exact
   let hit = contracts.find(c => c.product_name === desc);
@@ -74,14 +87,24 @@ function findContract(desc, contracts) {
   hit = contracts.find(c => normDesc(c.product_name) === nd);
   if (hit) return { contract: hit, method: 'normalised' };
 
-  // 3) Fuzzy ≥ 90%
+  // 3) Token-subset match
+  for (const c of contracts) {
+    const contractTokens = tokenSet(c.product_name);
+    const smaller = contractTokens.size <= descTokens.size ? contractTokens : descTokens;
+    const larger  = contractTokens.size <= descTokens.size ? descTokens : contractTokens;
+    if (smaller.size >= 2 && [...smaller].every(t => larger.has(t))) {
+      return { contract: c, method: 'token-subset' };
+    }
+  }
+
+  // 4) Fuzzy Dice ≥ 80%
   let best = null;
   let bestScore = 0;
   for (const c of contracts) {
     const score = diceSimilarity(nd, normDesc(c.product_name));
     if (score > bestScore) { bestScore = score; best = c; }
   }
-  if (bestScore >= 0.9) return { contract: best, method: `fuzzy(${(bestScore * 100).toFixed(1)}%)` };
+  if (bestScore >= 0.8) return { contract: best, method: `fuzzy(${(bestScore * 100).toFixed(1)}%)` };
   return null;
 }
 
