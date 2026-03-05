@@ -3,6 +3,8 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 import UploadZone from "@/components/invoices/UploadZone";
 import StatsBar from "@/components/invoices/StatsBar";
 import InvoiceTable from "@/components/invoices/InvoiceTable";
