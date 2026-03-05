@@ -17,6 +17,8 @@ export default function ContractPrices() {
   const [form, setForm] = useState({ vendor_name: DEFAULT_VENDOR, product_name: "", sku: "", contract_price: "", unit_type: "" });
   const [importFile, setImportFile] = useState(null);
   const [importing, setImporting] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [editForm, setEditForm] = useState({});
 
   const { data: prices = [], isLoading } = useQuery({
     queryKey: ["contract-prices"],
@@ -28,10 +30,26 @@ export default function ContractPrices() {
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["contract-prices"] }); setOpen(false); toast.success("Contract price added"); },
   });
 
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.ContractPrice.update(id, data),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["contract-prices"] }); setEditingId(null); toast.success("Updated"); },
+  });
+
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.ContractPrice.delete(id),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["contract-prices"] }); toast.success("Deleted"); },
   });
+
+  const startEdit = (p) => {
+    setEditingId(p.id);
+    setEditForm({ product_name: p.product_name, sku: p.sku || "", contract_price: p.contract_price, unit_type: p.unit_type || "", vendor_name: p.vendor_name });
+  };
+
+  const saveEdit = () => {
+    const price = parseFloat(editForm.contract_price);
+    if (!editForm.product_name || isNaN(price)) { toast.error("Product name and price required"); return; }
+    updateMutation.mutate({ id: editingId, data: { ...editForm, contract_price: price } });
+  };
 
   const handleSave = () => {
     const price = parseFloat(form.contract_price);
