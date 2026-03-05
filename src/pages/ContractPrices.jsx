@@ -140,21 +140,57 @@ export default function ContractPrices() {
               {!isLoading && prices.length === 0 && (
                 <TableRow><TableCell colSpan={6} className="text-center py-12 text-slate-400 text-sm">No contract prices. Add or import from CSV.</TableCell></TableRow>
               )}
-              {prices.map(p => (
-                <TableRow key={p.id} className="group hover:bg-slate-50/50 transition-colors">
-                  <TableCell className="font-medium text-slate-700 text-sm">{p.product_name}</TableCell>
-                  <TableCell className="font-mono text-xs text-slate-500">{p.sku || "—"}</TableCell>
-                  <TableCell className="text-xs text-slate-500 max-w-[160px] truncate">{p.vendor_name}</TableCell>
-                  <TableCell className="text-right font-mono font-semibold text-slate-800">${p.contract_price?.toFixed(4)}</TableCell>
-                  <TableCell className="text-xs text-slate-500">{p.unit_type || "—"}</TableCell>
-                  <TableCell>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-red-500"
-                      onClick={() => deleteMutation.mutate(p.id)}>
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {prices.map(p => {
+                const isEditing = editingId === p.id;
+                return (
+                  <TableRow key={p.id} className="group hover:bg-slate-50/50 transition-colors">
+                    <TableCell className="font-medium text-slate-700 text-sm">
+                      {isEditing
+                        ? <Input className="h-7 text-sm" value={editForm.product_name} onChange={e => setEditForm(f => ({ ...f, product_name: e.target.value }))} />
+                        : p.product_name}
+                    </TableCell>
+                    <TableCell className="font-mono text-xs text-slate-500">
+                      {isEditing
+                        ? <Input className="h-7 text-xs font-mono w-28" value={editForm.sku} onChange={e => setEditForm(f => ({ ...f, sku: e.target.value }))} />
+                        : p.sku || "—"}
+                    </TableCell>
+                    <TableCell className="text-xs text-slate-500 max-w-[160px] truncate">{p.vendor_name}</TableCell>
+                    <TableCell className="text-right font-mono font-semibold text-slate-800">
+                      {isEditing
+                        ? <Input className="h-7 text-sm text-right w-28 ml-auto" type="number" step="0.0001" value={editForm.contract_price} onChange={e => setEditForm(f => ({ ...f, contract_price: e.target.value }))} />
+                        : `$${p.contract_price?.toFixed(4)}`}
+                    </TableCell>
+                    <TableCell className="text-xs text-slate-500">
+                      {isEditing
+                        ? <Input className="h-7 text-xs w-20" value={editForm.unit_type} onChange={e => setEditForm(f => ({ ...f, unit_type: e.target.value }))} />
+                        : p.unit_type || "—"}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {isEditing ? (
+                          <>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-green-600 hover:text-green-700" onClick={saveEdit} disabled={updateMutation.isPending}>
+                              <Check className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-slate-600" onClick={() => setEditingId(null)}>
+                              <X className="h-3.5 w-3.5" />
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-blue-600" onClick={() => startEdit(p)}>
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-red-500" onClick={() => deleteMutation.mutate(p.id)}>
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>
