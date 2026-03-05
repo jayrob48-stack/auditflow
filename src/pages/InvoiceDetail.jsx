@@ -3,10 +3,11 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { ArrowLeft, CheckCircle2, AlertTriangle, FileText, ExternalLink } from "lucide-react";
+import { ArrowLeft, CheckCircle2, AlertTriangle, FileText, ExternalLink, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import AuditReport from "@/components/invoices/AuditReport";
 
 import StatusBadge from "@/components/invoices/StatusBadge";
 import InvoiceMetaGrid from "@/components/invoices/InvoiceMetaGrid";
