@@ -69,23 +69,10 @@ export default function Dashboard() {
     try {
       for (const file of files) {
         const { file_url } = await base44.integrations.Core.UploadFile({ file });
-
-        const extracted = await base44.integrations.Core.InvokeLLM({
-          prompt: SYSTEM_PROMPT + "\n\nExtract invoice data from the attached document.",
-          file_urls: [file_url],
-          response_json_schema: EXTRACTION_SCHEMA,
-        });
-
-        await base44.entities.Invoice.create({
-          ...extracted,
-          file_url,
-          status: extracted.needs_review ? "flagged" : "extracted",
-          raw_json: JSON.stringify(extracted, null, 2),
-        });
+        await base44.functions.invoke("processAmericanMetalsInvoice", { file_url });
       }
-
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
-      toast.success(`${files.length} invoice${files.length > 1 ? "s" : ""} processed`);
+      toast.success(`${files.length} invoice${files.length > 1 ? "s" : ""} processed & audited`);
     } catch (err) {
       toast.error("Failed to process invoice: " + err.message);
     } finally {
