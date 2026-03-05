@@ -18,6 +18,8 @@ export default function InvoiceDetail() {
   const invoiceId = urlParams.get("id");
   const queryClient = useQueryClient();
   const [notes, setNotes] = useState("");
+  const [auditReport, setAuditReport] = useState(null);
+  const [isAuditing, setIsAuditing] = useState(false);
 
   const { data: invoice, isLoading } = useQuery({
     queryKey: ["invoice", invoiceId],
