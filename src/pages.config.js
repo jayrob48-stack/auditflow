@@ -49,12 +49,18 @@
  */
 import Dashboard from './pages/Dashboard';
 import InvoiceDetail from './pages/InvoiceDetail';
+import AuditRuns from './pages/AuditRuns';
+import AuditRunDetail from './pages/AuditRunDetail';
+import ContractPrices from './pages/ContractPrices';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Dashboard": Dashboard,
     "InvoiceDetail": InvoiceDetail,
+    "AuditRuns": AuditRuns,
+    "AuditRunDetail": AuditRunDetail,
+    "ContractPrices": ContractPrices,
 }
 
 export const pagesConfig = {
