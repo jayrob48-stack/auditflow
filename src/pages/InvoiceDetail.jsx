@@ -161,6 +161,22 @@ export default function InvoiceDetail() {
           </div>
         )}
 
+        {/* Audit */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Audit Report</h2>
+            <Button
+              onClick={runAudit}
+              disabled={isAuditing}
+              className="bg-slate-800 hover:bg-slate-900 text-white gap-2 text-sm"
+            >
+              <ShieldCheck className="h-4 w-4" />
+              {isAuditing ? "Running…" : auditReport ? "Re-run Audit" : "Run Audit"}
+            </Button>
+          </div>
+          <AuditReport report={auditReport} isRunning={isAuditing} />
+        </div>
+
         {/* Review actions */}
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-4">
           <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Review Actions</h2>
