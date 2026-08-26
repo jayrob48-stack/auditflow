@@ -1,0 +1,83 @@
+{
+  "name": "AuditRun",
+  "type": "object",
+  "properties": {
+    "invoice_id": {
+      "type": "string",
+      "description": "Reference to Invoice entity id"
+    },
+    "invoice_number": {
+      "type": "string"
+    },
+    "invoice_date": {
+      "type": "string"
+    },
+    "vendor": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FLAG",
+        "ERROR"
+      ],
+      "default": "PASS"
+    },
+    "flags": {
+      "type": "array",
+      "description": "Array of audit flag objects",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "line_no": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "total_overcharge": {
+      "type": "number",
+      "description": "Total dollar overcharge detected"
+    },
+    "items_affected": {
+      "type": "number",
+      "description": "Number of line items with flags"
+    },
+    "computed_subtotal": {
+      "type": "number"
+    },
+    "computed_total": {
+      "type": "number"
+    },
+    "sum_lines": {
+      "type": "number"
+    },
+    "audit_json": {
+      "type": "string",
+      "description": "Full audit report JSON string"
+    },
+    "alert_sent": {
+      "type": "boolean",
+      "default": false
+    },
+    "alert_channels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "status"
+  ]
+}

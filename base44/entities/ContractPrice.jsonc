@@ -1,0 +1,42 @@
+{
+  "name": "ContractPrice",
+  "type": "object",
+  "properties": {
+    "vendor_name": {
+      "type": "string",
+      "description": "Vendor name this contract applies to"
+    },
+    "product_name": {
+      "type": "string",
+      "description": "Product name or description"
+    },
+    "sku": {
+      "type": "string",
+      "description": "Optional SKU or product code"
+    },
+    "contract_price": {
+      "type": "number",
+      "description": "Contracted unit price"
+    },
+    "unit_type": {
+      "type": "string",
+      "description": "Unit of measure (e.g. EA, RL, FT)"
+    },
+    "effective_date": {
+      "type": "string",
+      "description": "Date contract price becomes effective (YYYY-MM-DD)"
+    },
+    "expiry_date": {
+      "type": "string",
+      "description": "Date contract price expires (YYYY-MM-DD)"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "vendor_name",
+    "product_name",
+    "contract_price"
+  ]
+}
